@@ -9,12 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    private MyAdapter adapter;
+
     ArrayList<String> titles;
     ArrayList<String> description;
     ArrayList<Integer> images;
@@ -26,11 +24,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //initializing the arrayLists
         titles = new ArrayList<>();
         description = new ArrayList<>();
         images = new ArrayList<>();
 
-
+        //adding value to the arrayLists
         titles.add("Must Have");
         titles.add("Maybe");
         titles.add("Probably Not");
@@ -56,8 +55,11 @@ public class MainActivity extends AppCompatActivity {
         images.add(R.drawable.watch);
         images.add(R.drawable.phone2);
 
-        recyclerView = findViewById(R.id.recyclerview);
-        adapter = new MyAdapter(titles, description, images,  this);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+
+        //passing arrayList values in custom adapter(MyAdapter) for showing items in recycler view
+        ShoppingItemAdapter adapter = new ShoppingItemAdapter(titles, description, images, this);
+
         LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
@@ -68,13 +70,19 @@ public class MainActivity extends AppCompatActivity {
     ItemTouchHelper.SimpleCallback callback=new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP|ItemTouchHelper.DOWN|ItemTouchHelper.START|ItemTouchHelper.END,0) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            // checks if the view item is a shopping item or a title
             if (viewHolder.getItemViewType()!=0){
-                int fromPos=viewHolder.getAdapterPosition();
-                int toPos=target.getAdapterPosition();
+                int fromPos=viewHolder.getAdapterPosition();//dragged item initial position
+                int toPos=target.getAdapterPosition();//dragged item final position
+
+                //checks if the final position is not equal to zero
                 if (toPos!=0){
+                    //swap the view item position in list
                     Collections.swap(titles,fromPos,toPos);
                     Collections.swap(description,fromPos,toPos);
                     Collections.swap(images,fromPos,toPos);
+
+                    //notify the adapter after swap
                     recyclerView.getAdapter().notifyItemMoved(fromPos,toPos);
                 }
 
